@@ -9,8 +9,17 @@ public class ProductRepository {
         this.products = new ArrayList<>();
     }
 
-    public ArrayList<Product> getAll() {
-        return this.products;
+    public ArrayList<Product> getAll(String category) {
+        if(category == null) {
+            return this.products;
+        }
+        ArrayList<Product> newList = new ArrayList<>();
+        for(Product p : this.products) {
+            if(p.getCategory().equalsIgnoreCase(category)) {
+                newList.add(p);
+            }
+        }
+        return newList;
     }
 
     public Product getOne(int id) {
@@ -23,28 +32,42 @@ public class ProductRepository {
     }
 
     public Product create(Product product) {
+        for(Product p : this.products) {
+            if(p.getName().equalsIgnoreCase(product.getName())) {
+                return null;
+            }
+        }
         this.products.add(product);
         return product;
     }
 
     public Product update(int id, Product product) {
-        for(int i = 0; i < this.products.size(); i++) {
-            if(this.products.get(i).getId() == id) {
-                this.products.get(i).setName(product.getName());
-                this.products.get(i).setCategory(product.getCategory());
-                this.products.get(i).setPrice(product.getPrice());
-                return this.products.get(i);
+
+        Product theProduct = this.getOne(id);
+        if(theProduct == null) {
+            return theProduct;
+        }
+        theProduct.setName(product.getName());
+        theProduct.setCategory(product.getCategory());
+        theProduct.setPrice(product.getPrice());
+        return theProduct;
+    }
+
+    public boolean checkIfNameIsUnique(Product product) {
+        for(Product p : this.products) {
+            if(p.getName().equalsIgnoreCase(product.getName())) {
+                return false;
             }
         }
-        return null;
+        return true;
     }
 
     public Product delete(int id) {
-        for(int i = 0; i < this.products.size(); i++) {
-            if(this.products.get(i).getId() == id) {
-                return this.products.remove(i);
-            }
+        Product theProduct = this.getOne(id);
+        if(theProduct == null) {
+            return theProduct;
         }
-        return null;
+        this.products.remove(theProduct);
+        return theProduct;
     }
 }
